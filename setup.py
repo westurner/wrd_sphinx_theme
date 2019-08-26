@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [ ]
+requirements = ['sphinxjp.themes.basicstrap']
 
 setup_requirements = ['pytest-runner', ]
 
@@ -47,4 +47,9 @@ setup(
     url='https://github.com/westurner/wrd_sphinx_theme',
     version='0.1.0',
     zip_safe=False,
+    entry_points={
+        'sphinx.html_themes': [
+            'wrd_sphinx_theme = wrd_sphinx_theme'
+        ]
+    }
 )
