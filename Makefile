@@ -86,3 +86,46 @@ dist: clean ## builds source and wheel package
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
+
+
+BUILDDIR:=docs/_build
+BUILDDIRHTML:=${BUILDDIR}/html
+BUILDDIRSINGLEHTML:=${BUILDDIR}/singlehtml
+STATIC:=wrd_sphinx_theme/template/static
+LOCALJS=$(STATIC)/js/local.js
+
+localjs:
+	echo '' > $(LOCALJS)
+	cat $(STATIC)/js/ga.js >> $(LOCALJS)
+	cat $(STATIC)/js/fix-tables.js >> $(LOCALJS)
+	cat $(STATIC)/js/js.cookie.js >> $(LOCALJS)
+	cat $(STATIC)/js/sidenav-affix.js >> $(LOCALJS)
+	cat $(STATIC)/js/jquery.scrollTo.js >> $(LOCALJS)
+	cat $(STATIC)/js/jquery.isonscreen.js >> $(LOCALJS)
+	cat $(STATIC)/js/sidenav-scrollto.js >> $(LOCALJS)
+	cat $(STATIC)/js/linkstyles.js >> $(LOCALJS)
+	cat $(STATIC)/js/newtab.js >> $(LOCALJS)
+
+LOCALCSS=$(STATIC)/css/local.css
+localcss:
+	echo '' > $(LOCALCSS)
+	cat $(STATIC)/css/custom.css >> $(LOCALCSS)
+	cat $(STATIC)/css/sidenav-scrollto.css >> $(LOCALCSS)
+	cat $(STATIC)/css/leftnavbar.css >> $(LOCALCSS)
+	cat $(STATIC)/css/newtab.css >> $(LOCALCSS)
+	cat $(STATIC)/css/linkstyles.css >> $(LOCALCSS)
+
+localjs-live:
+	$(MAKE) localjs
+	cp -v ${LOCALJS} ${BUILDDIRHTML}/_static/js/local.js  || true;
+	cp -v ${LOCALJS} ${BUILDDIRSINGLEHTML}/_static/js/local.js  || true;
+
+
+localcss-live:
+	$(MAKE) localcss
+	cp -v ${LOCALCSS} ${BUILDDIRHTML}/_static/css/local.css || true;
+	cp -v ${LOCALCSS} ${BUILDDIRSINGLEHTML}/_static/css/local.css || true;
+
+local-live:
+	$(MAKE) localjs-live
+	$(MAKE) localcss-live
