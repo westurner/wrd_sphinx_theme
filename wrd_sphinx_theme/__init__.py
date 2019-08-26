@@ -14,5 +14,3 @@ template_path = os.path.join(package_dir, 'template')
 
 def setup(app):
     app.add_html_theme('wrd_sphinx_theme', template_path)
-    #app.add_js_file(os.path.join('js', 'local.js'))
-    #import pdb; pdb.set_trace()
