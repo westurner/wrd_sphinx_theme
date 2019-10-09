@@ -6,7 +6,7 @@ import os
 
 __author__ = """@westurner"""
 __email__ = 'wes@wrd.nu'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 package_dir = os.path.abspath(os.path.dirname(__file__))
 template_path = os.path.join(package_dir, 'template')
