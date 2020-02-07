@@ -103,6 +103,11 @@ div.document ul {
     margin-bottom: 2px;
 }
 
+/* fix nested lists */
+div.document ul ul {
+    margin-top: 4px;
+}
+
 div.footer-relbar {
     margin-top: 0;
     margin-bottom: 10px;
