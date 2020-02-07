@@ -98,6 +98,9 @@ body {
 
 div.document ul {
     padding-left: 18px;
+    /* fix nested lists */
+    margin-top: -8px;
+    margin-bottom: 2px;
 }
 
 div.footer-relbar {
