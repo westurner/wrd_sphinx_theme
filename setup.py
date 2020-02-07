@@ -45,7 +45,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/westurner/wrd_sphinx_theme',
-    version='0.1.3',
+    version='0.1.4',
     zip_safe=False,
     entry_points={
         'sphinx.html_themes': [
