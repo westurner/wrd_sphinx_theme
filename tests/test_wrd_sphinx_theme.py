@@ -6,7 +6,6 @@
 import pytest
 
 
-from wrd_sphinx_theme import wrd_sphinx_theme
 
 
 @pytest.fixture
