@@ -120,6 +120,10 @@ div.topic {
     background: #f0f0f0;
 }
 
+p.searchtip {
+    display: none;
+}
+
 body {
     background: #f8f8f8;
 }
