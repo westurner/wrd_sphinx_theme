@@ -191,6 +191,10 @@ span.pre {
     word-wrap: break-word;
 }
 
+pre.ap-terminal {
+    background-color: #202020;
+}
+
 table.docutils caption {
     padding: 8px;
     font-weight: bold;
@@ -304,6 +308,16 @@ div.cell details.above-input > summary {
   border-radius: 0 4px 4px 0;
   padding: 7px 12px 6px 12px;
 }
+
+div.ap-wrapper span {
+    color: #d37Aa7;
+}
+
+div.ap-wrapper pre {
+    background-color: #202020;
+    border-color: #202020;
+}
+
 
 @media print {
     .affix,
