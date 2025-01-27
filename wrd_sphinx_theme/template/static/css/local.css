@@ -86,6 +86,7 @@ div.body li p {
 #sidebar-wrapper {
     overflow-y: auto;
     height: 100%;
+    padding-left: 2px;
 }
 
 #sidebar-wrapper.affix-bottom, #sidebar-wrapper.affix-top {
