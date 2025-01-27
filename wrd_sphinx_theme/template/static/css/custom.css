@@ -21,8 +21,14 @@
     }
 }
 
-div.navbar-header a:visited, ul.navbar-nav a:visited, div.sidebar h3 a {
+div.navbar-header a:visited, ul.navbar-nav a:visited, div.sidebar h3 a,
+div.sidebar h1, div.sidebar h2, div.sidebar h3, div.sidebar h4, div.sidebar h5, div.sidebar h6{
     color: #777 !important;
+}
+
+
+div.sidebar h1, div.sidebar h2, div.sidebar h3, div.sidebar h4, div.sidebar h5, div.sidebar h6 {
+    padding-left: 8px;
 }
 
 button.navbar-toggle {
@@ -44,6 +50,17 @@ div.sidebar ul ul {
     list-style-type: none;
 }
 
+ 
+
+/* Inline #11 | http://0.0.0.0:8083/topics/math/arithmetic/arithmetic.html */
+/*
+.toctree-l4.current {
+  border-left: 4px solid #ccc;
+  padding: 2px;
+}*/
+
+
+
 div.sidebar {
     padding-bottom: 14px; /* square */
     /* width: 70%; */
@@ -60,13 +77,38 @@ div.sidebar h3 {
     font-size: 20px;
 }
 
+div.sidebar ul ul li {
+    border-left: 2px solid #ccc;
+    padding-left: 4px;
+    margin-bottom: 4px;
+    margin-left: -10px;
+}
+
+div.sidebar ul ul li.current {
+    border-left: 4px solid #ccc;
+    padding-left: 2px;
+}
+
+div.sidebar ul ul li:hover {
+    border-left: 4px solid #aaa !important;
+    padding-left: 2px;
+}
+
+div.sidebar ul ul li.current:hover {
+    border-left: 4px solid #999 !important;
+}
+
+div.sidebar ul ul li.youarehere {
+    border-left: 4px solid #777 !important;
+}
+
 div.body {
     min-width: inherit; /* override sphinx basic.css */
 }
 
 div.body h1 {
-    border-bottom: 1px solid rgb(208, 208, 208);
-    padding-bottom: 10px;
+    border-bottom: 3px solid rgb(208, 208, 208);
+    padding-bottom: 9px;
 }
 
 div.body h5 {
@@ -193,6 +235,73 @@ blockquote {
     font-size: 1.1em;
     font-style: italic;
     margin: 0px 0px 10px;
+}
+
+/* I suspect this is necessary due to
+ * both docutils and bootstrap having a .container class */
+div.docutils.container {
+  width: revert;
+}
+
+.cell.docutils.container,
+.cell_input.docutils.container,
+.cell_output.docutils.container {
+  /* align-content: ; */
+  filter: drop-shadow(4px 1px 4px #ddd);
+}
+
+
+.cell_output.docutils.container {
+    margin-top: 0;
+}
+
+div.cell div.cell_input, div.cell div.cell_output {
+  padding-left: 0em;
+  padding-right: 0em;
+  border: var(--mystnb-source-border-width) var(--mystnb-source-border-color) solid;
+  background-color: var(--mystnb-source-bg-color);
+  border-left-width: medium;
+  border-radius: var(--mystnb-source-border-radius);
+}
+
+div.cell div.cell_input {
+    border-left-color: var(--mystnb-source-margin-color);
+}
+
+div.cell div.cell_output {
+    border-left-color: var(--mystnb-output-margin-color);
+}
+
+
+div.cell div.cell_input,
+div.cell div.cell_output,
+div.cell details.above-input > summary {
+  border-width: 0 0 0 3px;
+}
+
+:root {
+  /* --mystnb-source-margin-color: green; */
+  --mystnb-source-margin-color: #acccac;
+  --mystnb-output-margin-color: #ded4cc;
+}
+
+.cell_output .output.text_plain,
+.cell_output .output.traceback,
+.cell_output .output.stream,
+.cell_output .output.stderr {
+  margin-top: 0em;
+  margin-bottom: 0em;
+  box-shadow: none;
+}
+
+ 
+
+/* bootstrap.min.css  */
+.input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {
+  margin-left: 0;
+  border-color: #ccc;
+  border-radius: 0 4px 4px 0;
+  padding: 7px 12px 6px 12px;
 }
 
 @media print {

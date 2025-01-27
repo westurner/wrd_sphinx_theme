@@ -23,7 +23,9 @@ div.sidebar > li.youarehere:before {
 }
 
 #sidebar-wrapper li.youarehere {
-    list-style-type: "➡ ";
+    /* list-style-type: "➡ "; */
+    border-left: 6px;
+    margin-left: -12px;
 }
 
 #content-wrapper a.headerlink {
