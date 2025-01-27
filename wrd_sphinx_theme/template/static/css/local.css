@@ -111,6 +111,15 @@ div.sidebar:first-of-type li {
     background: none;
 }
 
+nav.contents,
+aside.topic,
+div.topic {
+    border: 1px solid #ddd;
+    padding: 7px;
+    margin: 10px 0 10px 0;
+    background: #f0f0f0;
+}
+
 body {
     background: #f8f8f8;
 }
