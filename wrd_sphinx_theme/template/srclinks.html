@@ -9,7 +9,8 @@
   <ul class="this-page-menu">
     <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}"
             rel="nofollow"
-            target="_blank">{{ _('Source') }}</a></li>
+            target="_blank">{{
+                _('Source') + ' (.' + sourcename.rsplit(".", 2)[-2] + ')' }}</a></li>
    {%- if show_srclink_url %}
     <li><a href="{{ show_srclink_url }}"
             rel="nofollow"
@@ -32,10 +33,10 @@
    {%- endif %}
   </ul>
 </div>
-<div class="widget srclinks">
+<div class="widget srclinks highlight">
   <h3>Source</h3>
   {%- if srclink_src_url %}
-  <h5><a href="{{ srclink_src_url }}">{{
+  <p><a href="{{ srclink_src_url }}">{{
           srclink_src_url.lstrip('https://').lstrip('http://') }}</a>
       {%- if srclink_src_rev_url %}
       / <a href="{{ srclink_src_rev_url }}"
@@ -43,7 +44,7 @@
                 target="_blank"
                 font="monospace">{{ srclink_src_rev }}</a>
       {%- endif %}
-  </h5>
+  </p>
   {%- endif %}
   <ul>
   {%- if srclink_src_https_url %}
