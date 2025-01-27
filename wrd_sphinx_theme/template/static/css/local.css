@@ -47,6 +47,7 @@ div.sidebar ul ul {
 
 div.sidebar {
     padding-bottom: 14px; /* square */
+    /* width: 70%; */
 }
 
 div.sidebar pre {
@@ -98,8 +99,9 @@ div.body li p {
 
 div.sidebar:first-of-type li {
     /* hanging indent */
+    /*
     padding-left: 8px;
-    text-indent: -8px;
+    text-indent: -8px; */
 }
 
 
