@@ -8,6 +8,8 @@
 
 .navbar {
     margin-bottom: 0;
+
+    border: 0;
 }
 
 @media (max-width: 768px) {
