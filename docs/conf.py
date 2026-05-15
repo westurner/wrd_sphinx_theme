@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'WRD Sphinx Theme'
-copyright = u"2019, Wes Turner"
+copyright = u"2026, Wes Turner"
 author = u"Wes Turner"
 
 # The version info for the project you're documenting, acts as replacement
@@ -155,7 +155,7 @@ texinfo_documents = [
      u'WRD Sphinx Theme Documentation',
      author,
      'wrd_sphinx_theme',
-     'One line description of project.',
+     'A sphinx theme based on sphinxjp basicstrap (Bootstrap)',
      'Miscellaneous'),
 ]
 
