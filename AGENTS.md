@@ -66,6 +66,31 @@ npx playwright test --project=chromium
 ### DevContainer & Environment
 When working in VS Code via the DevContainer (`.devcontainer/devcontainer.json` + `Dockerfile.e2e`), you will have Node.js, Playwright system dependencies, and MCP integrations (like `chrome-devtools-mcp` or `firefox-devtools-mcp`) explicitly preconfigured. System tools like `rg`, `jq`, and `unzip` are available for deep searches.
 
+### Using DevTools MCP Servers
+When utilizing GitHub Copilot within this workspace, you can leverage Chrome or Firefox DevTools MCP servers to inspect layout, debug CSS/JS, and evaluate ARIA accessibility or performance metrics in a live browser.
+
+To use the DevTools MCP:
+1. Ensure the container has the Node.js dependencies installed (handled automatically over DevContainer).
+2. Configure VS Code Copilot to use the MCP servers. In your User or Workspace `settings.json`, add:
+   ```json
+   "github.copilot.chat.mcp.servers": {
+       "chrome-devtools": {
+           "command": "npx",
+           "args": ["-y", "chrome-devtools-mcp@latest"]
+       },
+       "firefox-devtools": {
+           "command": "npx",
+           "args": ["-y", "firefox-devtools-mcp@latest"]
+       }
+   }
+   ```
+3. Restart or reload the VS Code window.
+4. Host the documentation locally (e.g., using a simple HTTP server in the `docs/_build/html` directory).
+5. Open GitHub Copilot Chat and request actions such as:
+   - "Open a Chrome page to http://localhost:8000 and check for console errors."
+   - "Evaluate color contrast on the sidebar elements using the Firefox devtools."
+   - "Test if the mobile navbar collapse works."
+
 ### Key Rules
 - Avoid caching issues: ALWAYS run `make clean` before `make html` when making Jinja/CSS changes.
 - Tests (both unit and Playwright e2e) must be updated or added when creating new theme features.

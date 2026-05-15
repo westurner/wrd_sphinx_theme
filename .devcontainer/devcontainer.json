@@ -1,0 +1,26 @@
+{
+  "name": "wrd-sphinx-theme E2E",
+  "build": {
+    "dockerfile": "../Dockerfile.e2e"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-playwright.playwright",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        //"ms-vscode.vscode-docker",
+        //
+        //"esbenp.prettier-vscode",
+        //"dbaeumer.vscode-eslint",
+        //
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
+        //"RooVeterinaryInc.roo-cline"
+      ]
+    }
+  },
+  "remoteUser": "appuser",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "postCreateCommand": "npm install && if [ -f e2e/package.json ]; then cd e2e && npm install; fi"
+}

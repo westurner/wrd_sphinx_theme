@@ -1,0 +1,19 @@
+{
+  "name": "e2e-playwright-devtools-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "E2E Playwright and devtools mcp dependencies for container build",
+  "dependencies": {
+    "@playwright/test": "^1.44.0",
+    "playwright": "^1.44.0",
+
+    "chrome-devtools-mcp": "^0.26.0",
+    "firefox-devtools-mcp": "^0.9.2"
+  },
+  "scripts": {
+    "e2e": "../e2etest.sh",
+
+    "chrome-devtools": "npx chrome-devtools-mcp@latest",
+    "firefox-devtools": "npx firefox-devtools-mcp@latest"
+  }
+}
