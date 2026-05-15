@@ -1,11 +1,16 @@
 """
 """
+import sys
 import hashlib
 import base64
+import binascii
+import mmap
 import os
 import re
 import subprocess
 import functools
+
+HAS_FILE_DIGEST = sys.version_info >= (3, 11)
 
 try:
     from sphinx.util import logging
@@ -14,6 +19,26 @@ except ImportError:
     import logging
     logger = logging.getLogger(__name__)
 
+if HAS_FILE_DIGEST:
+    def _hash_file(f, algo: str):
+        return hashlib.file_digest(f, algo)
+else:
+    def _hash_file(f, algo: str):
+        h = hashlib.new(algo)
+        try:
+            fd = f.fileno()
+            size = os.fstat(fd).st_size
+            if size > 0:
+                with mmap.mmap(fd, size, access=mmap.ACCESS_READ) as mm:
+                    h.update(mm)
+                return h
+        except (AttributeError, ValueError, OSError):
+            pass
+        
+        # Fallback for empty files or non-mmap-able streams
+        for chunk in iter(lambda: f.read(65536), b""):
+            h.update(chunk)
+        return h
 
 def compute_sri_hashlib(file_path: str, algo: str = "sha384") -> str:
     """Compute the Subresource Integrity (SRI) hash for a file using hashlib."""
@@ -21,10 +46,8 @@ def compute_sri_hashlib(file_path: str, algo: str = "sha384") -> str:
         logger.warning(f"SRI computation skipped: not a valid file path: '{file_path}'")
         return ""
     with open(file_path, "rb") as f:
-        data = f.read()
-    h = hashlib.new(algo)
-    h.update(data)
-    digest = base64.b64encode(h.digest()).decode("utf-8")
+        h = _hash_file(f, algo)
+    digest = binascii.b2a_base64(h.digest(), newline=False).decode("ascii")
     return f"{algo}-{digest}"
 
 
