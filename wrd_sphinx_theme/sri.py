@@ -119,9 +119,12 @@ def compute_sri(file_path: str, algo: str = "sha384") -> str:
     return compute_sri_hashlib(file_path, algo)
 
 
-if __name__ == "__main__":
+def main():
     import sys
 
     if len(sys.argv) > 1:
         for p in sys.argv[1:]:
             print(f"{p}: {compute_sri_hashlib(p)}")
+
+if __name__ == "__main__":
+    main()
