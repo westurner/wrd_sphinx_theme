@@ -5,23 +5,27 @@
 set -e
 
 # Default settings
-IMAGE_NAME="localhost/e2e-test:latest"
-PODMAN="${PODMAN:-podman}"
+IMAGE_NAME="${IMAGE_NAME:-"localhost/e2e-test:latest"}"
+PODMAN="${PODMAN:-"podman"}"
 DO_BUILD="${DO_BUILD:-}"
 DO_IN_CONTAINER="${DO_IN_CONTAINER:-}"
 DO_INSTALL="${DO_INSTALL:-0}"
 PLAYWRIGHT_BROWSERS_PATH="${PWD}/.playwright-browsers"
+CONTAINER_USER="${CONTAINER_USER:-"appuser"}"
 
 usage() {
     echo "Usage: $0 [options] [playwright-args...]"
     echo ""
     echo "Options:"
     echo "  --install       Install Playwright browsers locally to .playwright-browsers (needed for --on-host)."
-    echo "  --in-container  Run tests inside a Podman container."
+    echo ""
     echo "  --on-host       Run tests locally on the host (Default)."
+    echo ""
+    echo "  --in-container  Run tests inside a Podman container."
     echo "  --build         Force rebuild of the container image (only for --in-container)."
     echo "  --no-build      Skip building the container image (only for --in-container)."
-    echo "  --help          Show this help message."
+    echo ""
+    echo "  -h/--help       Show this help message."
     echo ""
     echo "Environment Variables:"
     echo "  DO_INSTALL=1       Equivalent to --install"
@@ -29,6 +33,8 @@ usage() {
     echo "  DO_BUILD=1         Equivalent to --build"
     echo "  DO_BUILD=0         Equivalent to --no-build"
     echo "  PODMAN             Override podman executable"
+    echo "  CONTAINER_USER     Override user inside container (Default: appuser)"
+    echo "  PLAYWRIGHT_BROWSERS_PATH  Override path to Playwright browsers (Default: \${PWD}/.playwright-browsers)"
 }
 
 is_container() {
@@ -43,9 +49,8 @@ fix_node_modules() {
     # If e2e/node_modules exists, it conflicts with root node_modules for playwright config
     if [ -d "e2e/node_modules" ]; then
         echo "NOTE: there are both e2e/node_modules and root node_modules directories"
-        # Try to remove the directory itself initially
 
-        # TODO: I don't like this solution. I think we have a separate node_modules here for a reason (to optionally isolate the e2e tests from the app to host)
+        # Try to remove the directory itself initially
         # echo " Cleaning it..."
         # if ! rm -rf e2e/node_modules 2>/dev/null; then
         #      # If failed (e.g. mount point), remove contents
@@ -92,7 +97,7 @@ e2etest_main() {
             --no-build)
                 do_build=0
                 ;;
-            --help)
+            -h|--help)
                 usage
                 exit 0
                 ;;
@@ -127,7 +132,8 @@ e2etest_main() {
     fi
 
     if [ "$do_in_container" -eq 1 ]; then
-        run_in_container "$do_build" "$test_args"
+        project_name="$(basename "$PWD")"
+        run_in_container "$do_build" "$test_args" "$project_name"
     else
         run_on_host "$test_args"
     fi
@@ -136,7 +142,13 @@ e2etest_main() {
 run_in_container() {
     should_build="$1"
     args="$2"
+    project_name="$3"
     
+    if [ -z "$project_name" ]; then
+        echo "## Error: project_name must be specified."
+        exit 1
+    fi
+
     if is_container; then
         echo "## Error: Attempting to start a container from within a container."
         echo "## Please use --on-host or allow auto-detection."
@@ -163,19 +175,19 @@ run_in_container() {
     BROWSER_MOUNT=""
     if [ -d "${PLAYWRIGHT_BROWSERS_PATH}" ]; then
          echo "## Mounting local browsers from ${PLAYWRIGHT_BROWSERS_PATH}"
-         BROWSER_MOUNT="-v ${PLAYWRIGHT_BROWSERS_PATH}:/home/appuser/.cache/ms-playwright"
+         BROWSER_MOUNT="-v ${PLAYWRIGHT_BROWSERS_PATH}:/home/${CONTAINER_USER}/.cache/ms-playwright"
     fi
 
     (set -x; $PODMAN run --rm -it --replace \
         --security-opt=label=disable \
-        -v "${PWD}:/workspaces/srchq-nextjs" \
-        -v "${PWD}/e2e-logs:/workspaces/srchq-nextjs/e2e-logs" \
-        -v /workspaces/srchq-nextjs/e2e/node_modules \
+        -v "${PWD}:/workspaces/${project_name}" \
+        -v "${PWD}/e2e-logs:/workspaces/${project_name}/e2e-logs" \
+        -v /workspaces/${project_name}/e2e/node_modules \
         $BROWSER_MOUNT \
-        --user=appuser \
+        --user="${CONTAINER_USER}" \
         --userns=keep-id \
-        --name srchq-e2e-test "${IMAGE_NAME}" \
-        sh -c "cd /workspaces/srchq-nextjs && ./e2etest.sh $args")
+        --name e2e-test "${IMAGE_NAME}" \
+        sh -c "cd /workspaces/${project_name} && ./e2etest.sh $args")
 }
 
 run_on_host() {
