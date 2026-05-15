@@ -1,4 +1,25 @@
 {% extends "!basicstrap/layout.html" %}
-{% set css_files = css_files + ["_static/css/local.css"] %}
-{% set script_files = script_files + ["_static/js/jquery-3.7.1.min.js", "_static/js/local.js"] %}
+{% set style = "css/custom.css" %}
+
+{% set old_css_files = css_files %}
+{% set old_script_files = script_files %}
+{% set css_files = [] %}
+{% set script_files = [] %}
+
 {% set metatags = '<meta name="viewport" content="width=device-width, initial-scale=1">' + (metatags is defined and metatags or '') %}
+
+{% block linktags %}
+  {{ super() }}
+  {% for css in old_css_files %}
+    {% set css_path = css.filename if css.filename else css %}
+    <link rel="stylesheet" type="text/css" href="{{ pathto(css_path, 1) }}" integrity="{{ compute_sri(css_path) }}" {% if get_crossorigin(css_path) %}crossorigin="{{ get_crossorigin(css_path) }}"{% endif %} />
+  {% endfor %}
+  <link rel="stylesheet" href="{{ pathto('_static/css/local.css', 1) }}" type="text/css" integrity="{{ compute_sri('_static/css/local.css') }}" {% if get_crossorigin('_static/css/local.css') %}crossorigin="{{ get_crossorigin('_static/css/local.css') }}"{% endif %} />
+
+  {% for js in old_script_files %}
+    {% set js_path = js.filename if js.filename else js %}
+    <script src="{{ pathto(js_path, 1) }}" integrity="{{ compute_sri(js_path) }}" {% if get_crossorigin(js_path) %}crossorigin="{{ get_crossorigin(js_path) }}"{% endif %}></script>
+  {% endfor %}
+  <script src="{{ pathto('_static/js/jquery-3.7.1.min.js', 1) }}" integrity="{{ compute_sri('_static/js/jquery-3.7.1.min.js') }}" {% if get_crossorigin('_static/js/jquery-3.7.1.min.js') %}crossorigin="{{ get_crossorigin('_static/js/jquery-3.7.1.min.js') }}"{% endif %}></script>
+  <script src="{{ pathto('_static/js/local.js', 1) }}" integrity="{{ compute_sri('_static/js/local.js') }}" {% if get_crossorigin('_static/js/local.js') %}crossorigin="{{ get_crossorigin('_static/js/local.js') }}"{% endif %}></script>
+{% endblock %}
