@@ -50,6 +50,32 @@ Features
   * Shorten links by removing HTTPS (and shorten Wikipedia links)
 
 
+VSCode Flatpak terminal profile note
+------------------------------------
+
+For Flatpak-based VSCode setups that use ``/app/bin/host-spawn`` to launch
+the host shell, a useful upstream patch is to add an optional
+``shellType`` field to ``terminal.integrated.profiles.linux``.
+
+Example profile configuration:
+
+.. code:: json
+
+   {
+     "terminal.integrated.profiles.linux": {
+       "host-spawn bash": {
+         "path": "/app/bin/host-spawn",
+         "args": ["bash"],
+         "shellType": "bash"
+       }
+     }
+   }
+
+When patching VSCode upstream, add ``shellType`` as an optional profile
+property in terminal profile configuration/schema handling so shell
+integration can treat wrappers like ``host-spawn bash`` as ``bash``.
+
+
 Credits
 -------
 
