@@ -17,6 +17,9 @@ usage() {
     echo "Usage: $0 [options] [playwright-args...]"
     echo ""
     echo "Options:"
+    echo "  -C PATH         Path to change directory (cd) to before executing playwright"
+    echo "                  (Default: \$(dirname \$0)/e2e/)."
+    echo ""
     echo "  --install       Install Playwright browsers locally to .playwright-browsers (needed for --on-host)."
     echo ""
     echo "  --on-host       Run tests locally on the host (Default)."
@@ -60,9 +63,15 @@ fix_node_modules() {
 }
 
 install_browsers() {
+    test_dir="$1"
     echo "## Installing Playwright browsers to ${PLAYWRIGHT_BROWSERS_PATH}..."
     export PLAYWRIGHT_BROWSERS_PATH
     mkdir -p "${PLAYWRIGHT_BROWSERS_PATH}"
+    
+    # Save current directory and change to test directory
+    original_dir="$PWD"
+    cd "$test_dir"
+    
     # Install browsers defined in config (just what is needed)
     (set -x; npx playwright install --list | tee "${PLAYWRIGHT_BROWSERS_PATH}/.install.0_before.txt")
     (set -x; npx playwright install chromium | tee -a "${PLAYWRIGHT_BROWSERS_PATH}/install.log")
@@ -70,6 +79,8 @@ install_browsers() {
     
     # We ignore the error from diff because we want to proceed anyway, but exit code 1 means differences found
     (set -x; diff -Nau "${PLAYWRIGHT_BROWSERS_PATH}/.install.0_before.txt" "${PLAYWRIGHT_BROWSERS_PATH}/.install.1_after.txt" || true) 
+    
+    cd "$original_dir"
 }
 
 e2etest_main() {
@@ -77,32 +88,47 @@ e2etest_main() {
     do_in_container="$DO_IN_CONTAINER"
     do_build="$DO_BUILD"
     do_install="$DO_INSTALL"
+    test_dir="$(dirname "$0")/e2e"
     test_args=""
 
     # Argument parsing loop
-    for arg in "$@"; do
-        case "$arg" in
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
              --install)
                 do_install=1
+                shift
                 ;;
             --in-container)
                 do_in_container=1
+                shift
                 ;;
             --on-host)
                 do_in_container=0
+                shift
                 ;;
             --build)
                 do_build=1
+                shift
                 ;;
             --no-build)
                 do_build=0
+                shift
+                ;;
+            -C)
+                if [ "$#" -lt 2 ]; then
+                    echo "## Error: -C option requires an argument"
+                    exit 1
+                fi
+                test_dir="$2"
+                shift 2
                 ;;
             -h|--help)
                 usage
                 exit 0
                 ;;
             *)
-                test_args="$test_args $arg"
+                test_args="$test_args $1"
+                shift
                 ;;
         esac
     done
@@ -111,7 +137,7 @@ e2etest_main() {
     test_args=$(echo "$test_args" | sed 's/^ *//')
 
     if [ "$do_install" -eq 1 ]; then
-        install_browsers
+        install_browsers "$test_dir"
         if [ -z "$test_args" ] && [ -z "$do_in_container" ]; then
              exit 0
         fi
@@ -133,9 +159,9 @@ e2etest_main() {
 
     if [ "$do_in_container" -eq 1 ]; then
         project_name="$(basename "$PWD")"
-        run_in_container "$do_build" "$test_args" "$project_name"
+        run_in_container "$do_build" "$test_args" "$project_name" "$test_dir"
     else
-        run_on_host "$test_args"
+        run_on_host "$test_args" "$test_dir"
     fi
 }
 
@@ -143,6 +169,7 @@ run_in_container() {
     should_build="$1"
     args="$2"
     project_name="$3"
+    test_dir="$4"
     
     if [ -z "$project_name" ]; then
         echo "## Error: project_name must be specified."
@@ -187,11 +214,12 @@ run_in_container() {
         --user="${CONTAINER_USER}" \
         --userns=keep-id \
         --name e2e-test "${IMAGE_NAME}" \
-        sh -c "cd /workspaces/${project_name} && ./e2etest.sh $args")
+        sh -c "cd /workspaces/${project_name} && ./e2etest.sh -C \"${test_dir}\" $args")
 }
 
 run_on_host() {
     args="$1"
+    test_dir="$2"
     
     # Environment Setup
     if is_container; then
@@ -205,6 +233,9 @@ run_on_host() {
     
     # Ensure no duplicate node_modules
     fix_node_modules
+    
+    echo "## Changing directory to $test_dir"
+    cd "$test_dir"
     
     echo "## Args: $args"
     
