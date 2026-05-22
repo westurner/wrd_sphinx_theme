@@ -1,6 +1,6 @@
 #!/bin/sh
 
-## playwright-browsers.sh
+## playwrightbrowser.sh
 
 usage() {
     echo "Usage: $0 [options] [--] [browser arguments...]"
