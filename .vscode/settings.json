@@ -17,7 +17,7 @@
       "args": ["-y", "chrome-devtools-mcp@latest"],
       "env": {
         "PW_BROWSER": "chromium",
-        "CHROME_PATH": "/workspaces/wrd-sphinx-theme/.vscode/playwright-browser.sh"
+        "CHROME_PATH": "/workspaces/wrd-sphinx-theme/playwrightbrowser.sh"
       }
     },
     "firefox-devtools": {
@@ -25,8 +25,8 @@
       "args": ["-y", "firefox-devtools-mcp@latest"],
       "env": {
         "PW_BROWSER": "firefox",
-        "FIREFOX_PATH": "/workspaces/wrd-sphinx-theme/.vscode/playwright-browser.sh",
-        "FIREFOX_BIN": "/workspaces/wrd-sphinx-theme/.vscode/playwright-browser.sh"
+        "FIREFOX_PATH": "/workspaces/wrd-sphinx-theme/playwrightbrowser.sh",
+        "FIREFOX_BIN": "/workspaces/wrd-sphinx-theme/playwrightbrowser.sh"
       }
     }
   }
