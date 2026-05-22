@@ -49,12 +49,12 @@
 		// $ findmnt -D | grep -E '/dev/dri|nvidia|gl|libEGL|libGLES|libGLX'
 		
 		// ### Grant access to any GPU to the devcontainer
-		"--gpus", "all",
+		"--gpus","all",
 		"--device","nvidia.com/gpu=all",
 		// Note: /dri/card0, /dri/renderD129
 
 		// ### Grant access to any GPU to the devcontainer
-		// "--device","/dev/dri",
+		"--device","/dev/dri",
 
 		// ### Grant access to one or more GPUs to the devcontainer
 		// "--device","/dev/dri/card0",
