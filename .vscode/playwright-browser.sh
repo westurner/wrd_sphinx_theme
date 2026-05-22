@@ -115,15 +115,18 @@ main() {
         firefox)
             FIND_ARGS="-path */firefox/firefox"
             PROFILE_FLAG="--profile"
+            CHROME_MODEL_FLAG=""
             ;;
         webkit)
             FIND_ARGS="-name pw_run.sh -o -name MiniBrowser"
             # WebKit driver handles profiles differently, omit for now.
             PROFILE_FLAG=""
+            CHROME_MODEL_FLAG=""
             ;;
         *)
             FIND_ARGS="-name chrome"
             PROFILE_FLAG="--user-data-dir="
+            CHROME_MODEL_FLAG="--disable-features=OptimizationGuideOnDeviceModel"
             ;;
     esac
 
@@ -146,7 +149,7 @@ main() {
         if [ "$BROWSER" = "firefox" ]; then
             set -- "$BIN_PATH" "$PROFILE_FLAG" "$PROFILE_DIR" "$@"
         else
-            set -- "$BIN_PATH" "${PROFILE_FLAG}${PROFILE_DIR}" "$@"
+            set -- "$BIN_PATH" "${PROFILE_FLAG}${PROFILE_DIR}" "$CHROME_MODEL_FLAG" "$@"
         fi
     else
         set -- "$BIN_PATH" "$@"
