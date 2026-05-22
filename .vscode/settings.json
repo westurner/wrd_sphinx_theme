@@ -1,0 +1,33 @@
+{
+  "python.defaultInterpreterPath": "/usr/bin/python3",
+  // "github.copilot.chat.mcp.servers": {
+  //   "chrome-devtools": {
+  //     "command": "flatpak-spawn",
+  //     "args": [ "-y", "chrome-devtools-mcp@latest"]
+  //   },
+  //   "firefox-devtools": {
+  //     "command": "flatpak-spawn /usr/bin/npx",
+  //     "args": ["-y", "firefox-devtools-mcp@latest"]
+  //   }
+  // },
+
+  "github.copilot.chat.mcp.servers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"],
+      "env": {
+        "PW_BROWSER": "chromium",
+        "CHROME_PATH": "/workspaces/wrd-sphinx-theme/.vscode/playwright-browser.sh"
+      }
+    },
+    "firefox-devtools": {
+      "command": "npx",
+      "args": ["-y", "firefox-devtools-mcp@latest"],
+      "env": {
+        "PW_BROWSER": "firefox",
+        "FIREFOX_PATH": "/workspaces/wrd-sphinx-theme/.vscode/playwright-browser.sh",
+        "FIREFOX_BIN": "/workspaces/wrd-sphinx-theme/.vscode/playwright-browser.sh"
+      }
+    }
+  }
+}

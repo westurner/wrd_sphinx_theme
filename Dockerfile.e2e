@@ -15,32 +15,42 @@ RUN --mount=type=cache,target=/var/lib/apt/lists,id=apt-cache-lists \
     --mount=type=cache,target=/var/cache/apt/archives,id=apt-cache-archives \
     (echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections) && \
     apt-get update && apt-get install -y \
+    \
+    sudo \
+    procps \
+    bash-completion \
+    \
+    ca-certificates \
     curl \
     wget \
     git \
+    rsync \
+    git-lfs \
+    \
     ripgrep \
-    procps \
+    \
+    xxd \
     jq \
     less \
     unzip \
+    xz-utils \
     zip \
+    \
     build-essential \
     pkg-config \
-    libssl-dev \
-    zlib1g-dev \
-    libbz2-dev \
-    libreadline-dev \
-    libsqlite3-dev \
     llvm \
-    libncurses5-dev \
-    libncursesw5-dev \
-    xz-utils \
-    tk-dev \
-    libxml2-dev \
-    libxmlsec1-dev \
+    libbz2-dev \
     libffi-dev \
     liblzma-dev \
-    ca-certificates \
+    libncurses5-dev \
+    libncursesw5-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    tk-dev \
+    zlib1g-dev \
     # Playwright specific dependencies
     libfontenc1 libgl1 libice6 libsm6 libxaw7 libxfont2 libxkbfile1 libxmu6 \
     libxmuu1 libxpm4 libxt6t64 x11-xkb-utils xauth xfonts-encodings xfonts-utils \
@@ -109,12 +119,19 @@ RUN --mount=type=cache,target=/var/lib/apt/lists,id=apt-cache-lists \
     libxss1 \
     libxtst6 \
     \
+    libpulse0 \
+    pulseaudio-utils \
+    \
+    xvfb \
     fonts-freefont-ttf fonts-ipafont-gothic fonts-liberation \
     fonts-noto-color-emoji fonts-tlwg-loma-otf fonts-unifont fonts-wqy-zenhei \
     xfonts-cyrillic xfonts-scalable \
-    xvfb \
     \
-    sudo \
+    python-is-python3 \
+    python3-argcomplete \
+    python3-pip \
+    python3-venv \
+    python3-virtualenvwrapper \
     \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
@@ -138,6 +155,9 @@ RUN (set -x; \
 # Create app directory and set permissions
 RUN mkdir -p /app && chown -R "$USERNAME:$USERNAME" /app
 
+# Pre-create XDG_RUNTIME_DIR to prevent root ownership from Docker volume mounts
+RUN mkdir -p /run/user/$USER_UID && chown -R "$USERNAME:$USERNAME" /run/user/$USER_UID
+
 
 USER $USERNAME
 RUN (set -x; \
@@ -160,11 +180,12 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/home/appuser/.cache/ms-playwright
 
 RUN --mount=type=cache,target=/var/lib/apt/lists,id=apt-cache-lists \
     --mount=type=cache,target=/var/cache/apt/archives,id=apt-cache-archives \
-    #--mount=type=cache,target=/home/appuser/.npm,id=npm-cache-appuser-v1 \
+    --mount=type=cache,target=/tmp/pw-cache,uid=1000,gid=1000,id=pw-cache \
     set -x -e; \
         npm install; \
         if [ -f /app/e2e/package.json ]; then cd /app/e2e && npm install && cd ..; fi; \
-        npx playwright install --with-deps chromium firefox; \
+        PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-cache npx playwright install --with-deps chromium firefox; \
+        rsync -a /tmp/pw-cache/ /home/appuser/.cache/ms-playwright/; \
         npx playwright install --list; \
         echo "Playwright install complete"
 
