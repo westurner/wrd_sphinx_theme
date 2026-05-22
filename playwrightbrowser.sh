@@ -10,7 +10,7 @@ usage() {
     echo ""
     echo "Positional Browser Shorthand (optional first argument):"
     echo "  firefox, ff, f           Launch Firefox."
-    echo "  chrome, ch               Launch Chromium (chrome binary)."
+    echo "  chrome, cr               Launch Chromium (chrome binary)."
     echo "  chromium, chromi, ci, c  Launch Chromium."
     echo "  webkit, wk, w            Launch WebKit."
     echo ""
@@ -91,7 +91,7 @@ browser_from_shorthand() {
         webkit|wk|w)
             printf "%s" "webkit"
             ;;
-        chrome|ch)
+        chrome|cr)
             printf "%s" "chrome"
             ;;
         chromium|chromi|ci|c)
