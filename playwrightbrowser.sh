@@ -3,27 +3,34 @@
 ## playwrightbrowser.sh
 
 usage() {
-    echo "Usage: $0 [options] [--] [browser arguments...]"
+    echo "Usage: $0 [BROWSER] [options] [--] [browser arguments...]"
     echo ""
     echo "Wrapper to launch Playwright-downloaded browsers (chromium, firefox, webkit)"
     echo "with optional custom profile directories."
     echo ""
+    echo "Positional Browser Shorthand (optional first argument):"
+    echo "  firefox, ff, f           Launch Firefox."
+    echo "  chrome, ch               Launch Chromium (chrome binary)."
+    echo "  chromium, chromi, ci, c  Launch Chromium."
+    echo "  webkit, wk, w            Launch WebKit."
+    echo ""
     echo "Options:"
-    echo "  -h, --help               Show this help message"
+    echo "  -h, --help               Show this help message."
     echo "  --pw-browser BROWSER     Specify the browser to run (chromium, firefox, webkit)."
     echo "                           Defaults to PW_BROWSER env var or 'chromium'."
     echo "  --pw-profile PROFILE     Specify a custom profile path."
-    echo "                           Defaults to all profiles under \$PW_PROFILES_BASE or '\$PWD/.browser-profiles'."
+    echo "                           Defaults to profiles under \$PW_PROFILES_BASE/<browser>."
     echo "  --pw-log FILE            Log stdout/stderr of the browser to a file."
     echo "                           Defaults to PW_LOG_FILE env var if set."
     echo "  --hard-timeout SECONDS   Kill the browser after SECONDS."
     echo "  --pw-self-check          Print resolved paths and launch command before running (default)."
-    echo "  --no-pw-self-check       Disable self-check output."
+    echo "  --no-pw-self-check       Suppress self-check output."
     echo ""
     echo "Environment Variables:"
-    echo "  PW_BROWSER               Default browser to use."
-    echo "  PW_PROFILES_BASE         Base directory for automatically mapping profiles."
-    echo "  PW_SELF_CHECK            Enable/disable self-check by default (default: 1)."
+    echo "  PW_BROWSER               Default browser to use (default: chromium)."
+    echo "  PW_PROFILES_BASE         Base directory for browser profiles."
+    echo "                           Defaults to <script-dir>/.browser-profiles."
+    echo "  PW_SELF_CHECK            Set to 0/false/no/off to disable self-check output (default: 1)."
     echo "  PW_LOG_FILE              File to redirect browser stdout and stderr to."
     echo "  PLAYWRIGHT_BROWSERS_PATH Custom Playwright browser installation path."
     echo ""
@@ -32,6 +39,12 @@ usage() {
     echo "    podman run -v \"\$PWD/.browser-profiles:/workspaces/project/.browser-profiles\" ..."
     echo "  Or:"
     echo "    podman run -v \"\${XDG_CACHE_HOME:-\$HOME/.cache}/playwright-profiles:/workspaces/project/.browser-profiles\" ..."
+    echo ""
+    echo "Examples:"
+    echo "  $0 firefox"
+    echo "  $0 ff --hard-timeout 10"
+    echo "  $0 --pw-browser=chromium --pw-log /tmp/browser.log"
+    echo "  PW_SELF_CHECK=0 $0 chrome -- --new-window https://example.com"
 }
 
 run_with_logging() {
@@ -68,12 +81,12 @@ main() {
     # Positional shorthand: allow first arg as browser name.
     if [ $# -gt 0 ]; then
         case "$1" in
-            firefox|ff)
+            firefox|ff|f)
                 shift
                 name=firefox
                 set -- --pw-browser="$name" "$@"
                 ;;
-            webkit)
+            webkit|wk|w)
                 shift
                 name=webkit
                 set -- --pw-browser="$name" "$@"
@@ -83,7 +96,7 @@ main() {
                 name=chrome
                 set -- --pw-browser="$name" "$@"
                 ;;
-            chromium|c)
+            chromium|chromi|ci|c)
                 shift
                 name=chromium
                 set -- --pw-browser="$name" "$@"
