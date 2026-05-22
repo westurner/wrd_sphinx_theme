@@ -106,8 +106,13 @@ ENV/
 
 # nodejs modules
 node_modules/
+
+# e2e
 e2e/node_modules
 e2e/playwright-report
 e2e/test-results
+e2e/e2e-logs/.last-run.json
+e2e/e2e-logs/**/error-context.md
 
+# e2e browser profiles
 .browser-profiles/
