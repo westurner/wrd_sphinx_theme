@@ -65,6 +65,32 @@ main() {
     PROFILES_BASE="${PW_PROFILES_BASE:-$DEFAULT_BASE}"
     PROFILE_DIR=""
 
+    # Positional shorthand: allow first arg as browser name.
+    if [ $# -gt 0 ]; then
+        case "$1" in
+            firefox|ff)
+                shift
+                name=firefox
+                set -- --pw-browser="$name" "$@"
+                ;;
+            webkit)
+                shift
+                name=webkit
+                set -- --pw-browser="$name" "$@"
+                ;;
+            chrome|ch)
+                shift
+                name=chrome
+                set -- --pw-browser="$name" "$@"
+                ;;
+            chromium|c)
+                shift
+                name=chromium
+                set -- --pw-browser="$name" "$@"
+                ;;
+        esac
+    fi
+
     # Parse wrapper arguments
     while [ $# -gt 0 ]; do
         case "$1" in
