@@ -48,8 +48,8 @@ run_with_logging() {
 
 main() {
     BROWSER="${PW_BROWSER:-chromium}"
-    # Default volume mount friendly directory inside the workspace
-    DEFAULT_BASE="$(cd "$(dirname "$0")/.." && pwd)/.browser-profiles"
+    # Default volume mount friendly directory inside the workspace/repo
+    DEFAULT_BASE="$(cd "$(dirname "$0")" && pwd)/.browser-profiles"
     PROFILES_BASE="${PW_PROFILES_BASE:-$DEFAULT_BASE}"
     PROFILE_DIR=""
 
@@ -109,7 +109,10 @@ main() {
     fi
 
     # Ensure profile directory exists for volume mounts
-    mkdir -p "$PROFILE_DIR"
+    if ! mkdir -p "$PROFILE_DIR"; then
+        echo "ERROR: Could not create profile directory: $PROFILE_DIR" >&2
+        exit 1
+    fi
 
     case "$BROWSER" in
         firefox)
@@ -134,7 +137,7 @@ main() {
     # Find the browser executable
     BIN_PATH=$(eval find ~/.cache/ms-playwright $FIND_ARGS -type f -executable 2>/dev/null | sort -r | head -n 1)
     if [ -z "$BIN_PATH" ]; then
-        LOCAL_BROWSERS_DIR="${PLAYWRIGHT_BROWSERS_PATH:-$(cd "$(dirname "$0")/.." && pwd)/.playwright-browsers}"
+        LOCAL_BROWSERS_DIR="${PLAYWRIGHT_BROWSERS_PATH:-$(cd "$(dirname "$0")" && pwd)/.playwright-browsers}"
         if [ -d "$LOCAL_BROWSERS_DIR" ]; then
             BIN_PATH=$(eval find "$LOCAL_BROWSERS_DIR" $FIND_ARGS -type f -executable 2>/dev/null | sort -r | head -n 1)
         fi
