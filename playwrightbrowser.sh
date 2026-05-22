@@ -127,6 +127,7 @@ main() {
             FIND_ARGS="-name chrome"
             PROFILE_FLAG="--user-data-dir="
             CHROME_MODEL_FLAG="--disable-features=OptimizationGuideOnDeviceModel"
+            CHROME_SIGNIN_FLAG="--disable-sync"
             ;;
     esac
 
@@ -149,7 +150,7 @@ main() {
         if [ "$BROWSER" = "firefox" ]; then
             set -- "$BIN_PATH" "$PROFILE_FLAG" "$PROFILE_DIR" "$@"
         else
-            set -- "$BIN_PATH" "${PROFILE_FLAG}${PROFILE_DIR}" "$CHROME_MODEL_FLAG" "$@"
+            set -- "$BIN_PATH" "${PROFILE_FLAG}${PROFILE_DIR}" "$CHROME_MODEL_FLAG" "$CHROME_SIGNIN_FLAG" "$@"
         fi
     else
         set -- "$BIN_PATH" "$@"
