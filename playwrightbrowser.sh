@@ -17,10 +17,13 @@ usage() {
     echo "  --pw-log FILE            Log stdout/stderr of the browser to a file."
     echo "                           Defaults to PW_LOG_FILE env var if set."
     echo "  --hard-timeout SECONDS   Kill the browser after SECONDS."
+    echo "  --pw-self-check          Print resolved paths and launch command before running (default)."
+    echo "  --no-pw-self-check       Disable self-check output."
     echo ""
     echo "Environment Variables:"
     echo "  PW_BROWSER               Default browser to use."
     echo "  PW_PROFILES_BASE         Base directory for automatically mapping profiles."
+    echo "  PW_SELF_CHECK            Enable/disable self-check by default (default: 1)."
     echo "  PW_LOG_FILE              File to redirect browser stdout and stderr to."
     echo "  PLAYWRIGHT_BROWSERS_PATH Custom Playwright browser installation path."
     echo ""
@@ -48,6 +51,15 @@ run_with_logging() {
 
 main() {
     BROWSER="${PW_BROWSER:-chromium}"
+    SELF_CHECK_RAW="${PW_SELF_CHECK:-1}"
+    case "$SELF_CHECK_RAW" in
+        0|false|FALSE|no|NO|off|OFF)
+            SELF_CHECK=0
+            ;;
+        *)
+            SELF_CHECK=1
+            ;;
+    esac
     # Default volume mount friendly directory inside the workspace/repo
     DEFAULT_BASE="$(cd "$(dirname "$0")" && pwd)/.browser-profiles"
     PROFILES_BASE="${PW_PROFILES_BASE:-$DEFAULT_BASE}"
@@ -90,6 +102,14 @@ main() {
                 ;;
             --hard-timeout=*)
                 HARD_TIMEOUT="${1#*=}"
+                shift
+                ;;
+            --pw-self-check)
+                SELF_CHECK=1
+                shift
+                ;;
+            --no-pw-self-check)
+                SELF_CHECK=0
                 shift
                 ;;
             --)
@@ -164,6 +184,20 @@ main() {
         set -- timeout -v "$HARD_TIMEOUT" "$@"
     else
         echo "INFO: Running browser"
+    fi
+
+    if [ "$SELF_CHECK" -eq 1 ]; then
+        {
+            echo "INFO: Self-check"
+            echo "  Browser: $BROWSER"
+            echo "  Browser binary: $BIN_PATH"
+            echo "  Profile base: $PROFILES_BASE"
+            echo "  Profile dir: $PROFILE_DIR"
+            echo "  Log file: ${PW_LOG_FILE:-<none>}"
+            echo "  Hard timeout: ${HARD_TIMEOUT:-<none>}"
+            echo "  Launch command:"
+            printf "    %s\n" "$*"
+        } >&2
     fi
 
     set -x
