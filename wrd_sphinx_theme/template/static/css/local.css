@@ -244,6 +244,12 @@ blockquote {
     margin: 0px 0px 10px;
 }
 
+.chat-input blockquote {
+    background-color: #f5f1e8;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
 /* I suspect this is necessary due to
  * both docutils and bootstrap having a .container class */
 div.docutils.container {

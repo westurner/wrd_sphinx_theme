@@ -3,8 +3,10 @@
 
 """Tests for `wrd_sphinx_theme` package."""
 
-import pytest
 import os
+from types import SimpleNamespace
+
+import pytest
 import wrd_sphinx_theme
 
 
@@ -29,6 +31,24 @@ def test_setup():
     assert 'wrd_sphinx_theme' in app.themes
     assert app.themes['wrd_sphinx_theme'] == wrd_sphinx_theme.template_path
     assert 'html-page-context' in app.connections
+
+
+def test_update_context_filters_documentation_options_script_file():
+    context = {
+        'script_files': [
+            SimpleNamespace(filename='documentation_options.js'),
+            SimpleNamespace(filename='_static/js/jquery-3.7.1.min.js'),
+            '_static/js/local.js',
+        ],
+        'css_files': [],
+    }
+
+    wrd_sphinx_theme.update_context(None, None, None, context, None)
+
+    assert context['script_files'] == [
+        '_static/js/jquery-3.7.1.min.js',
+        '_static/js/local.js',
+    ]
 
 @pytest.fixture
 def response():
