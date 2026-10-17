@@ -50,6 +50,25 @@ def test_update_context_filters_documentation_options_script_file():
         '_static/js/local.js',
     ]
 
+
+def test_sri_resolves_project_static_file(tmp_path):
+    static_root = tmp_path / 'project-static'
+    asset = static_root / 'img' / 'theme-test.png'
+    asset.parent.mkdir(parents=True)
+    asset.write_bytes(b'theme asset')
+
+    app = SimpleNamespace(
+        confdir=str(tmp_path),
+        config=SimpleNamespace(html_static_path=['project-static']),
+        builder=SimpleNamespace(outdir=str(tmp_path / 'out')),
+    )
+    context = {}
+    wrd_sphinx_theme.add_sri_to_context(app, None, None, context, None)
+
+    assert context['compute_sri']('_static/img/theme-test.png') == (
+        wrd_sphinx_theme.compute_sri(str(asset))
+    )
+
 @pytest.fixture
 def response():
     """Sample pytest fixture.

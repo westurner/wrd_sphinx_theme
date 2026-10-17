@@ -1,14 +1,13 @@
-"""
-"""
-import sys
-import hashlib
+"""Compute Subresource Integrity hashes for local asset files."""
 import base64
 import binascii
+import functools
+import hashlib
 import mmap
 import os
 import re
 import subprocess
-import functools
+import sys
 
 HAS_FILE_DIGEST = sys.version_info >= (3, 11)
 
@@ -78,7 +77,7 @@ def compute_sri_subprocess_openssl_dgst(file_path: str, algo: str = "sha384") ->
             return ""
         digest = out.decode('utf-8').strip()
         return f"{algo}-{digest}"
-    except Exception:
+    except (OSError, subprocess.SubprocessError, ValueError):
         return ""
 
 
@@ -98,11 +97,11 @@ def compute_sri_subprocess_shasum(file_path: str, algo: str = "sha384") -> str:
         bin_digest = bytes.fromhex(hex_digest)
         digest = base64.b64encode(bin_digest).decode('utf-8')
         return f"{algo}-{digest}"
-    except Exception:
+    except (OSError, subprocess.SubprocessError, IndexError, ValueError):
         return ""
 
 
-@functools.lru_cache()
+@functools.lru_cache
 def get_crossorigin(url: str) -> str:
     """
     Return 'anonymous' if the URL appears to be an absolute (external) URL.
@@ -113,10 +112,28 @@ def get_crossorigin(url: str) -> str:
     return ""
 
 
-@functools.lru_cache()
-def compute_sri(file_path: str, algo: str = "sha384") -> str:
-    """Cached wrapper for SRI computation."""
+@functools.lru_cache
+def _compute_sri_cached(file_path: str, algo: str, mtime_ns: int, size: int) -> str:
+    """Cached wrapper for SRI computation that invalidates on file content changes."""
     return compute_sri_hashlib(file_path, algo)
+
+
+def compute_sri(file_path: str, algo: str = "sha384") -> str:
+    """Compute and cache SRI using the file's current metadata as the cache key."""
+    if not os.path.isfile(file_path):
+        return ""
+
+    try:
+        stat_result = os.stat(file_path)
+    except OSError:
+        return ""
+
+    return _compute_sri_cached(
+        file_path,
+        algo,
+        stat_result.st_mtime_ns,
+        stat_result.st_size,
+    )
 
 
 def main():
