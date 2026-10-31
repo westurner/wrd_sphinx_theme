@@ -1,0 +1,65 @@
+.table-wide-toggle {
+  display: block;
+  margin: 0 0 0.4rem auto;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid #6c757d;
+  border-radius: 3px;
+  background: #fff;
+  color: #333;
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.table-wide-toggle:hover {
+  background: #f3f5f6;
+}
+
+.table-wide-toggle:focus-visible {
+  outline: 2px solid #176b87;
+  outline-offset: 2px;
+}
+
+.table-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-gutter: stable;
+}
+
+.table-responsive:focus-visible {
+  outline: 2px solid #176b87;
+  outline-offset: 2px;
+}
+
+.table-responsive--wide {
+  position: relative;
+  z-index: 1;
+  width: min(72vw, 1280px);
+  max-width: none;
+}
+
+.table-responsive--wide table.docutils {
+  width: 100%;
+  min-width: 100%;
+  table-layout: auto;
+}
+
+.table-responsive--wide table.docutils th,
+.table-responsive--wide table.docutils td {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767px) {
+  .table-responsive--wide {
+    width: calc(100% + 30px);
+    max-width: 100vw;
+    margin-left: -15px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .table-responsive {
+    scroll-behavior: smooth;
+  }
+}

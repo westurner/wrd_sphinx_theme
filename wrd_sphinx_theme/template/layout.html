@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="{{ pathto(css_path, 1) }}" integrity="{{ compute_sri(css_path) }}" {% if get_crossorigin(css_path) %}crossorigin="{{ get_crossorigin(css_path) }}"{% endif %} />
   {% endfor %}
   <link rel="stylesheet" href="{{ pathto('_static/css/local.css', 1) }}" type="text/css" integrity="{{ compute_sri('_static/css/local.css') }}" {% if get_crossorigin('_static/css/local.css') %}crossorigin="{{ get_crossorigin('_static/css/local.css') }}"{% endif %} />
+  <link rel="stylesheet" href="{{ pathto('_static/css/wide-tables.css', 1) }}" type="text/css" integrity="{{ compute_sri('_static/css/wide-tables.css') }}" {% if get_crossorigin('_static/css/wide-tables.css') %}crossorigin="{{ get_crossorigin('_static/css/wide-tables.css') }}"{% endif %} />
 
   {% for js in old_script_files %}
     {% set js_path = js.filename if js.filename is defined else js %}
@@ -27,4 +28,5 @@
   {% endfor %}
   <script src="{{ pathto('_static/js/jquery-3.7.1.min.js', 1) }}" integrity="{{ compute_sri('_static/js/jquery-3.7.1.min.js') }}" {% if get_crossorigin('_static/js/jquery-3.7.1.min.js') %}crossorigin="{{ get_crossorigin('_static/js/jquery-3.7.1.min.js') }}"{% endif %}></script>
   <script src="{{ pathto('_static/js/local.js', 1) }}" integrity="{{ compute_sri('_static/js/local.js') }}" {% if get_crossorigin('_static/js/local.js') %}crossorigin="{{ get_crossorigin('_static/js/local.js') }}"{% endif %}></script>
+  <script src="{{ pathto('_static/js/wide-tables.js', 1) }}" integrity="{{ compute_sri('_static/js/wide-tables.js') }}" {% if get_crossorigin('_static/js/wide-tables.js') %}crossorigin="{{ get_crossorigin('_static/js/wide-tables.js') }}"{% endif %}></script>
 {% endblock %}
