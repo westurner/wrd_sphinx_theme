@@ -17,8 +17,13 @@
   <link rel="stylesheet" href="{{ pathto('_static/css/local.css', 1) }}" type="text/css" integrity="{{ compute_sri('_static/css/local.css') }}" {% if get_crossorigin('_static/css/local.css') %}crossorigin="{{ get_crossorigin('_static/css/local.css') }}"{% endif %} />
 
   {% for js in old_script_files %}
-    {% set js_path = js.filename if js.filename else js %}
-    <script src="{{ pathto(js_path, 1) }}" integrity="{{ compute_sri(js_path) }}" {% if get_crossorigin(js_path) %}crossorigin="{{ get_crossorigin(js_path) }}"{% endif %}></script>
+    {% set js_path = js.filename if js.filename is defined else js %}
+    {% set js_attributes = js.attributes if js.attributes is defined else {} %}
+    {% if js_path %}
+      <script src="{{ pathto(js_path, 1) }}" integrity="{{ compute_sri(js_path) }}" {% for attribute, value in js_attributes.items() if attribute != 'body' %}{{ attribute }}="{{ value }}" {% endfor %}{% if get_crossorigin(js_path) %}crossorigin="{{ get_crossorigin(js_path) }}"{% endif %}></script>
+    {% else %}
+      <script {% for attribute, value in js_attributes.items() if attribute != 'body' %}{{ attribute }}="{{ value }}" {% endfor %}>{{ js_attributes.get('body', '') | safe }}</script>
+    {% endif %}
   {% endfor %}
   <script src="{{ pathto('_static/js/jquery-3.7.1.min.js', 1) }}" integrity="{{ compute_sri('_static/js/jquery-3.7.1.min.js') }}" {% if get_crossorigin('_static/js/jquery-3.7.1.min.js') %}crossorigin="{{ get_crossorigin('_static/js/jquery-3.7.1.min.js') }}"{% endif %}></script>
   <script src="{{ pathto('_static/js/local.js', 1) }}" integrity="{{ compute_sri('_static/js/local.js') }}" {% if get_crossorigin('_static/js/local.js') %}crossorigin="{{ get_crossorigin('_static/js/local.js') }}"{% endif %}></script>
