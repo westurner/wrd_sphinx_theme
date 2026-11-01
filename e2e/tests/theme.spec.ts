@@ -5,6 +5,38 @@ test.describe('wrd-sphinx-theme e2e tests', () => {
     await page.goto('/');
   });
 
+  test('loads jQuery before Bootstrap and provides affix without console errors', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+
+    await page.goto('/usage.html');
+    const runtime = await page.evaluate(() => ({
+      jquery: typeof window.jQuery,
+      affix: typeof window.jQuery?.fn?.affix,
+    }));
+
+    expect(runtime.jquery).toBe('function');
+    expect(runtime.affix).toBe('function');
+    expect(pageErrors).toEqual([]);
+  });
+
+  test('table permalink clicks do not trigger an empty Bootstrap selector', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+
+    await page.goto('/usage.html');
+    await expect(page.locator('#localToc')).not.toHaveAttribute('data-target', '#');
+
+    const permalink = page.locator('a.headerlink[href="#id3"]');
+    await expect(permalink).toBeVisible();
+    await permalink.click();
+    await expect(page).toHaveURL(/#id3$/);
+    expect(errors).toEqual([]);
+  });
+
   test('layout and sidenav-affix', async ({ page }) => {
     // Check if sidebar wrapper is present (from layout/affix)
     const sidebarWrapper = page.locator('#sidebar-wrapper');
@@ -27,6 +59,21 @@ test.describe('wrd-sphinx-theme e2e tests', () => {
     const headerlink = page.locator('a.headerlink[href="#installation"]');
     // We might not have #installation explicitly but let's check for the default ones.
     // Or we can just check if any youarehere class exists after clicking.
+  });
+
+  test('sidenav scrolling ignores empty and missing targets', async ({ page }) => {
+    const pageErrors: string[] = [];
+    page.on('pageerror', error => pageErrors.push(error.message));
+
+    await page.goto('/usage.html#wide-tables');
+    await page.evaluate(() => {
+      window.navbar_update('#');
+      window.navbar_update('#missing-anchor');
+      window.navbar_scrollto(window.jQuery());
+      window.jQuery('#sidebar-wrapper').scrollTo(window.jQuery());
+    });
+
+    expect(pageErrors).toEqual([]);
   });
 
   test('newtab features and options widget', async ({ page }) => {
@@ -75,5 +122,48 @@ test.describe('wrd-sphinx-theme e2e tests', () => {
     await shortenCheckbox.check({ force: true });
     
     await expect(shortenCheckbox).toBeChecked();
+  });
+
+  test('transposed table remains visible when outline mode is disabled', async ({ page }) => {
+    await page.goto('/usage.html#wide-tables');
+
+    const table = page.locator('table.docutils').filter({
+      hasText: 'Platonic solids: topology, symmetry, and metric formulas',
+    });
+    const wrapper = table.locator('xpath=..');
+    const controls = wrapper.locator('xpath=preceding-sibling::*[1]');
+    const outlineButton = controls.getByRole('button', { name: 'Show table as an outline' });
+    const transposeButton = controls.getByRole('button', { name: 'Transpose table' });
+
+    await expect(table).toBeVisible();
+    await outlineButton.click();
+    await expect(wrapper.locator('.table-outline__item')).toHaveCount(5);
+
+    await transposeButton.click();
+    await expect(wrapper.locator('.table-outline__item')).toHaveCount(9);
+
+    await outlineButton.click();
+    const transposedTable = wrapper.locator('.table-view-output table.docutils');
+    await expect(transposedTable).toBeVisible();
+    await expect(transposedTable.locator('tbody > tr')).toHaveCount(9);
+    await expect(table).toBeHidden();
+  });
+
+  test('table controls are present even when a table fits its wrapper', async ({ page }) => {
+    await page.goto('/usage.html#wide-tables');
+
+    const table = page.locator('table.docutils').filter({
+      hasText: 'Example using a grid table (ReStructuredText)',
+    });
+    const wrapper = table.locator('xpath=..');
+    const fits = await table.evaluate(element => {
+      return element.scrollWidth <= element.parentElement.clientWidth + 2;
+    });
+    expect(fits).toBeTruthy();
+
+    const controls = wrapper.locator('xpath=preceding-sibling::*[1]');
+    await expect(controls.getByRole('button', { name: 'Widen table' })).toBeVisible();
+    await expect(controls.getByRole('button', { name: 'Show table as an outline' })).toBeVisible();
+    await expect(controls.getByRole('button', { name: 'Transpose table' })).toBeVisible();
   });
 });

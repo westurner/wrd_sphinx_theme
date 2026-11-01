@@ -74,7 +74,7 @@ install_browsers() {
     
     # Install browsers defined in config (just what is needed)
     (set -x; npx playwright install --list | tee "${PLAYWRIGHT_BROWSERS_PATH}/.install.0_before.txt")
-    (set -x; npx playwright install chromium | tee -a "${PLAYWRIGHT_BROWSERS_PATH}/install.log")
+    (set -x; npx playwright install chromium firefox | tee -a "${PLAYWRIGHT_BROWSERS_PATH}/install.log")
     (set -x; npx playwright install --list | tee "${PLAYWRIGHT_BROWSERS_PATH}/.install.1_after.txt")
     
     # We ignore the error from diff because we want to proceed anyway, but exit code 1 means differences found
