@@ -4,7 +4,7 @@
 {% set old_css_files = css_files %}
 {% set old_script_files = script_files %}
 {% set css_files = [] %}
-{% set script_files = [] %}
+{% set script_files = ['_static/js/jquery-3.7.1.min.js'] %}
 
 {% set metatags = '<meta name="viewport" content="width=device-width, initial-scale=1">' + (metatags is defined and metatags or '') %}
 
@@ -26,7 +26,6 @@
       <script {% for attribute, value in js_attributes.items() if attribute != 'body' %}{{ attribute }}="{{ value }}" {% endfor %}>{{ js_attributes.get('body', '') | safe }}</script>
     {% endif %}
   {% endfor %}
-  <script src="{{ pathto('_static/js/jquery-3.7.1.min.js', 1) }}" integrity="{{ compute_sri('_static/js/jquery-3.7.1.min.js') }}" {% if get_crossorigin('_static/js/jquery-3.7.1.min.js') %}crossorigin="{{ get_crossorigin('_static/js/jquery-3.7.1.min.js') }}"{% endif %}></script>
   <script src="{{ pathto('_static/js/local.js', 1) }}" integrity="{{ compute_sri('_static/js/local.js') }}" {% if get_crossorigin('_static/js/local.js') %}crossorigin="{{ get_crossorigin('_static/js/local.js') }}"{% endif %}></script>
   <script src="{{ pathto('_static/js/wide-tables.js', 1) }}" integrity="{{ compute_sri('_static/js/wide-tables.js') }}" {% if get_crossorigin('_static/js/wide-tables.js') %}crossorigin="{{ get_crossorigin('_static/js/wide-tables.js') }}"{% endif %}></script>
 {% endblock %}

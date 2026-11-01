@@ -327,6 +327,24 @@ div.ap-wrapper pre {
 }
 
 
+
+table.docutils caption {
+  padding-left: 4px;
+  text-decoration: dotted underline lightgray;
+}
+
+table.docutils caption::after {
+  content: " Table";
+  padding-right: 4px;
+  vertical-align: middle;
+  color: #c0c0c0;
+  font-size: 12px;
+  padding-top: 4px;
+  text-decoration: dotted underline;
+}
+
+
+
 @media print {
     .affix,
     #sidebar-wrapper.affix-bottom,

@@ -270,7 +270,10 @@ $(document).ready(function() {
 					// DOMElement / jQuery
 					if (targ.is || targ.style) {
 						// Get the real position of the target
-						toff = (targ = $(targ)).offset();
+						targ = $(targ);
+						if (!targ.length) return;
+						toff = targ.offset();
+						if (!toff) return;
 					}
 			}
 
@@ -300,8 +303,9 @@ $(document).ready(function() {
 					}
 				} else {
 					var val = targ[pos];
+						if (val == null) return;
 					// Handle percentage values
-					attr[key] = val.slice && val.slice(-1) === '%' ?
+						attr[key] = typeof val === 'string' && val.slice(-1) === '%' ?
 						parseFloat(val) / 100 * max
 						: val;
 				}
@@ -440,43 +444,39 @@ $(document).ready(function() {
 
 function navbar_scrollto(node) {
     var sidebar = $('#sidebar-wrapper').first()[0];
-    var navbar = $(sidebar).find('div.sidebar').first()[0];
+    if (!sidebar) return;
 
-    if (sidebar && navbar) {
-        var do_scroll = false;
-        if ($(navbar).is(':visible')) {
-            if ($.scrollTo) {
-                do_scroll = true;
-            } else {
-                console.log('$.scrollTo not found');
-            }
-        }
-        if (do_scroll) {
-            // console.log("scrollTo", node);
-            if (!($(node).isOnScreen())) {
-                $(sidebar).scrollTo($(node), {
-                    axis: 'y',
-                    offset: { top: -100 }
-                });
-            }
-        }
-    } else {
-        console.log('sidebar is', sidebar);
-        console.log('navbar is', navbar);
+    var navbar = $(sidebar).find('div.sidebar').first()[0];
+    var $node = $(node).first();
+    if (!navbar || !$node.length || !document.documentElement.contains($node[0])) return;
+    if (!$node.offset() || !$(navbar).is(':visible')) return;
+    if (typeof $.fn.scrollTo !== 'function' || typeof $.fn.isOnScreen !== 'function') return;
+
+    if (!$node.isOnScreen()) {
+        $(sidebar).scrollTo($node, {
+            axis: 'y',
+            offset: { top: -100 }
+        });
     }
 }
 function navbar_update(nodeurl) {
 
     // console.log('navbar_update', nodeurl);
 
+    if (typeof nodeurl !== 'string' || nodeurl.length < 2 || nodeurl.charAt(0) !== '#') {
+        return;
+    }
     if (nodeurl.match('^#index-[0-9]+')) {
         return;
     }
-    var __node = $(nodeurl).first();
-    if (!(__node)) {
-        console.log('navbar_update: nodeurl not found', nodeurl)
-        return
+    var targetId;
+    try {
+        targetId = decodeURIComponent(nodeurl.slice(1));
+    } catch (error) {
+        return;
     }
+    if (!document.getElementById(targetId)) return;
+
     var content = $('#content-wrapper');
     var navbar = $('#sidebar-wrapper').find('div.sidebar').first()[0];
     ($(content)
@@ -500,8 +500,9 @@ function navbar_update(nodeurl) {
         .removeClass('youarehere');
 
     if (nodeurl) {
-        var headerlink = $(content)
-            .find('a.headerlink[href="' + nodeurl + '"]');
+        var headerlink = $(content).find('a.headerlink').filter(function() {
+            return this.hash === nodeurl;
+        });
         headerlink
             .addClass('youarehere')
             .text('⬅');
@@ -509,16 +510,20 @@ function navbar_update(nodeurl) {
             .addClass('youarehere');
 
         var toplink = $('#navbar-top')
-            .find('a.reference.internal[href="' + nodeurl + '"]');
+            .find('a.reference.internal').filter(function() {
+                return this.hash === nodeurl;
+            });
         toplink
             .addClass('youarehere');
         toplink.parent()
             .addClass('youarehere');
 
         var navbarlink = $(navbar)
-            .find('a[href="' + nodeurl + '"]');
+            .find('a').filter(function() {
+                return this.hash === nodeurl;
+            }).first();
 
-        if (navbarlink) {
+        if (navbarlink.length) {
             navbarlink
                 .addClass('youarehere');
             navbarlink.parent()
@@ -531,13 +536,7 @@ function navbar_update(nodeurl) {
                 console.log('navbar_scrollto(navbarlink.first()): err');
                 console.log(e);
             }
-        } else {
-            console.log("nodeurl not found");
-            console.log(nodeurl);
         }
-    } else {
-        console.log("nodeurl is false");
-        console.log(nodeurl);
     }
 }
 
@@ -558,6 +557,11 @@ function navbar__add_top_button() {
 }
 
 function navbar_init() {
+  var localToc = document.getElementById('localToc');
+  if (localToc && localToc.getAttribute('data-target') === '#') {
+    localToc.removeAttribute('data-target');
+  }
+
     // require('jquery.scrollto')
     //var scriptstr = '<script src="https://cdn.jsdelivr.net/jquery.scrollto/2.1.0/jquery.scrollTo.min.js"></script>';
     //$(scriptstr).appendTo("head");

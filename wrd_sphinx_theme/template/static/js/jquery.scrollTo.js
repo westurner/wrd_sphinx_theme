@@ -89,7 +89,10 @@
 					// DOMElement / jQuery
 					if (targ.is || targ.style) {
 						// Get the real position of the target
-						toff = (targ = $(targ)).offset();
+						targ = $(targ);
+						if (!targ.length) return;
+						toff = targ.offset();
+						if (!toff) return;
 					}
 			}
 
@@ -119,8 +122,9 @@
 					}
 				} else {
 					var val = targ[pos];
+						if (val == null) return;
 					// Handle percentage values
-					attr[key] = val.slice && val.slice(-1) === '%' ?
+						attr[key] = typeof val === 'string' && val.slice(-1) === '%' ?
 						parseFloat(val) / 100 * max
 						: val;
 				}
