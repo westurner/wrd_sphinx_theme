@@ -10,7 +10,7 @@ readme = "README.rst"
 authors = [
     { name = "Wes Turner", email = "wes@wrd.nu" },
 ]
-license = { text = "MIT license" }
+license = "MIT"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Developers",
